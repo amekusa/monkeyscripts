@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Add links to gameplay videos on YouTube and Twitch
-// @namespace    amekusa
+// @namespace    amekusa.gog-gameplay-videos
 // @author       amekusa
 // @version      1.0
 // @description  Adds links to gameplay videos on YouTube and Twitch. Made extremely simple & lightweight. No jQuery used. No side effects.
@@ -11,7 +11,7 @@
 // ==/UserScript==
 
 (function () {
-	let NS = '--ns' + Math.floor(Math.random() * 9999); // namespace
+	let NS = '--ns' + Math.floor(Math.random() * 10000); // namespace
 	let doc = document;
 
 	let m = doc.URL.match(/gog\.com\/(?:[^/]+\/)?game\/([^/]+)$/);
