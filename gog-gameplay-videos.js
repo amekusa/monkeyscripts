@@ -8,6 +8,8 @@
 // @match        https://www.gog.com/*/game/*
 // @run-at       document-end
 // @grant        none
+// @license      MIT
+// @homepage     https://github.com/amekusa/monkeyscripts
 // ==/UserScript==
 
 (function () {
