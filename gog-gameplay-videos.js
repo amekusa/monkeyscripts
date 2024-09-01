@@ -2,7 +2,7 @@
 // @name         Add links to gameplay videos on YouTube and Twitch
 // @namespace    amekusa.gog-gameplay-videos
 // @author       amekusa
-// @version      1.0
+// @version      1.0.1
 // @description  Adds links to gameplay videos on YouTube and Twitch. Made extremely simple & lightweight. No jQuery used. No side effects.
 // @match        https://www.gog.com/game/*
 // @match        https://www.gog.com/*/game/*
@@ -12,9 +12,8 @@
 // @homepage     https://github.com/amekusa/monkeyscripts
 // ==/UserScript==
 
-(function () {
+(function (doc) {
 	let NS = '--ns' + Math.floor(Math.random() * 10000); // namespace
-	let doc = document;
 
 	let m = doc.URL.match(/gog\.com\/(?:[^/]+\/)?game\/([^/]+)$/);
 	if (!m) {
@@ -41,7 +40,7 @@
 	padding: .25em .5em;
 	color: white;
 	font-weight: bold;
-	opacity: .6;
+	opacity: .5;
 	transition: opacity .2s ease-out;
 }
 #${NS}-watch-gameplay a:hover,
@@ -70,5 +69,6 @@
 	<a ${attrs} href="https://www.youtube.com/results?search_query=${game}+gameplay">${youtube}</a>
 	<a ${attrs} href="https://www.twitch.tv/search?term=${game}">${twitch}</a>
 </div>`;
-})();
+
+})(document);
 
