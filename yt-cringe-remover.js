@@ -12,7 +12,7 @@
 // ==/UserScript==
 
 (function (doc) {
-	let debug = true ? console.debug : (() => {});
+	let debug = false ? console.debug : (() => {});
 	let NS = '--ns' + Math.floor(Math.random() * 10000); // namespace
 
 	let filter = [
