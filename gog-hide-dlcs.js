@@ -3,7 +3,7 @@
 // @namespace    amekusa.gog-hide-dlcs
 // @author       amekusa
 // @version      1.0
-// @description  Hide DLCs in the store page by default. Only affects the "STORE" link on the top
+// @description  Hide DLCs in the store page by default. Doesn't work on some links
 // @match        https://www.gog.com/*
 // @run-at       document-start
 // @grant        none
@@ -11,15 +11,26 @@
 // @homepage     https://github.com/amekusa/monkeyscripts
 // ==/UserScript==
 
-(function () {
-	let doc = document;
-	doc.addEventListener('DOMContentLoaded', () => {
-		let link = doc.querySelector('a.menu-link[href$="/games"]');
-		if (!link) {
-			console.error('Bad HTML');
-			return;
-		}
-		link.setAttribute('href', link.getAttribute('href') + '?hideDLCs=true');
-	})
-})();
+(function (doc) {
+	// URL params to add to the store links
+	let params = 'hideDLCs=true';
+	// params += '&discounted=true'; // option: Show only discounted
+	// params += '&hideOwned=true';  // option: Hide all owned products
+
+	let addParams = link => {
+		let href = link.getAttribute('href');
+		link.setAttribute('href', href + (href.includes('?') ? '&' : '?') + params);
+	};
+	let update = () => {
+		let links = [];
+		let exclude = `:not([href*="${params}"])`;
+		links.push(doc.querySelectorAll('a[href$="/games"]' + exclude));
+		links.push(doc.querySelectorAll('a[href*="/games?"]' + exclude));
+		links.push(doc.querySelectorAll('a[href*="/games/"]' + exclude));
+		for (let i = 0; i < links.length; i++) links[i].forEach(addParams);
+	};
+	doc.addEventListener('DOMContentLoaded', update);
+	doc.addEventListener('scrollend', update);
+
+})(document);
 
