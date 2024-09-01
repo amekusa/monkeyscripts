@@ -5,7 +5,7 @@
 // @version      0.1.0
 // @description  Remove cringe videos & channels on YouTube
 // @match        https://www.youtube.com/*
-// @run-at       document-end
+// @run-at       document-start
 // @grant        none
 // @license      MIT
 // @homepage     https://github.com/amekusa/monkeyscripts
@@ -24,13 +24,15 @@
 	let brand = `${NS}-cursed`;
 
 	let purge = item => {
-		console.debug('purge:', item);
+		// console.debug('purge:', item);
 		item.classList.add(brand);
 	};
 
 	let update = () => {
 		check('ytd-video-renderer');
-		check('ytd-reel-item-renderer');
+		check('ytd-rich-item-renderer');
+		check('ytd-reel-item-renderer'); // videos in a carousel list
+		check('ytd-compact-video-renderer'); // videos on the right sidebar
 	};
 
 	let check = sel => {
@@ -47,6 +49,13 @@
 
 	doc.addEventListener('DOMContentLoaded', update);
 	doc.addEventListener('scrollend', update);
+
+	let style = doc.createElement('style');
+	style.innerHTML = `
+.${brand} {
+	opacity: .1 !important;
+}`
+	doc.head.appendChild(style);
 
 })(document);
 
