@@ -5,7 +5,7 @@
 // @version      0.1.0
 // @description  Remove cringe videos & channels on YouTube
 // @match        https://www.youtube.com/*
-// @run-at       document-start
+// @run-at       document-end
 // @grant        none
 // @license      MIT
 // @homepage     https://github.com/amekusa/monkeyscripts
