@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Hide DLCs by default
+// @name         GOG - Hide DLCs by default
 // @namespace    amekusa.gog-hide-dlcs
 // @author       amekusa
 // @version      1.0.1

@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Remove cringe videos & channels on YouTube
+// @name         YouTube - Hide cringe videos & channels
 // @namespace    amekusa.yt-cringe-remover
 // @author       amekusa
 // @version      0.1.1
