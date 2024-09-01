@@ -2,7 +2,7 @@
 // @name         Remove cringe videos & channels on YouTube
 // @namespace    amekusa.yt-cringe-remover
 // @author       amekusa
-// @version      0.1.0
+// @version      0.1.1
 // @description  Remove cringe videos & channels on YouTube. Not fully implemented yet
 // @match        https://www.youtube.com/*
 // @run-at       document-start
