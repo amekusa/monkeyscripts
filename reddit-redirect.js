@@ -6,6 +6,8 @@
 // @description  Automatically redirects you to old.reddit.com. Doesn't break browser history.
 // @match        https://www.reddit.com/*
 // @match        https://reddit.com/*
+// @exclude      https://www.reddit.com/media?*
+// @exclude      https://www.reddit.com/gallery/*
 // @run-at       document-start
 // @grant        none
 // @license      MIT
