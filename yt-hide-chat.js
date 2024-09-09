@@ -2,7 +2,7 @@
 // @name         YouTube - Hide chat by default
 // @namespace    amekusa.yt-hide-chat
 // @author       amekusa
-// @version      1.1.1
+// @version      1.1.2
 // @description  Hide chat on YouTube live videos by default.
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -35,6 +35,9 @@
 	};
 
 	let update = () => {
+		// only work with a video page
+		if (!window.location.href.startsWith('https://www.youtube.com/watch?')) return;
+
 		// hook "Show chat" button
 		let btn = doc.querySelector('#chat-container #show-hide-button button');
 		if (btn) {
