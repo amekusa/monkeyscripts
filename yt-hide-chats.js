@@ -2,7 +2,7 @@
 // @name         YouTube - Hide chats by default
 // @namespace    amekusa.yt-hide-chats
 // @author       amekusa
-// @version      1.0.1
+// @version      1.1.0
 // @description  Hide chats on YouTube live videos by default.
 // @match        https://www.youtube.com/watch?*
 // @run-at       document-start
