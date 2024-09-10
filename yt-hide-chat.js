@@ -13,7 +13,7 @@
 
 (function (doc) {
 	// --- config ---
-	let wait = 8000; // initial wait time (ms)
+	let wait = 4000; // initial wait time (ms)
 	let interval = 2000; // update interval (ms)
 	let match = /^https:\/\/www\.youtube\.com\/(?:watch\?|clip\/)/; // url pattern
 	let debug = false ? console.debug : (() => {});
