@@ -23,7 +23,10 @@
 	let find = () => {
 		try {
 			let frame = doc.querySelector('iframe#chatframe');
-			return frame ? frame.contentWindow.document.querySelector('yt-live-chat-renderer #close-button button') : null;
+			if (!frame) return null;
+			frame = frame.contentWindow.document;
+			if (!frame.querySelector('yt-live-chat-item-list-renderer #items')) return null; // wait actual messages show up before close
+			return frame.querySelector('yt-live-chat-header-renderer #close-button button');
 		} catch (e) {
 			return null;
 		}
