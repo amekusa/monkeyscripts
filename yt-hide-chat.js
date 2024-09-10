@@ -13,60 +13,72 @@
 
 (function (doc) {
 	// --- config ---
-	let interval = 1500;
+	let wait = 8000; // initial wait time (ms)
+	let interval = 2000; // update interval (ms)
+	let match = /^https:\/\/www\.youtube\.com\/(?:watch\?|clip\/)/; // url pattern
 	let debug = false ? console.debug : (() => {});
 	// --------------
 
-	let hide = true;
-	let url = window.location.href;
+	let watcher;
+	let hide;
+	let url;
 
-	let find = () => {
+	function findCloseButton() {
 		try {
 			let el = doc.querySelector('iframe#chatframe');
 			if (!el) return null;
 			el = el.contentWindow.document;
-			// ensure the actual chat messages have beeen showed up
 			if (!el.querySelector('yt-live-chat-item-list-renderer #items [id], yt-live-chat-item-list-renderer #empty-state-message')) return null;
 			return el.querySelector('yt-live-chat-header-renderer #close-button button');
 		} catch (e) {
 			return null;
 		}
-	};
+	}
 
-	let unhide = () => {
-		debug('unhide');
+	function unhide() {
+		debug('unhide.');
 		hide = false;
-	};
+	}
 
-	let update = () => {
-		// only work with a video page
-		if (!window.location.href.startsWith('https://www.youtube.com/watch?')) return;
+	function update() {
+		if (!window.location.href.match(match)) return; // do nothing
+
+		// detect url change
+		if (url != window.location.href) {
+			debug('url changed:', window.location.href);
+			return init();
+		}
+
+		if (!hide) return;
+
+		// find & click the close button
+		let btn = findCloseButton();
+		if (btn) {
+			debug('click:', btn);
+			return btn.dispatchEvent(new Event('click'));
+		}
 
 		// hook "Show chat" button
-		let btn = doc.querySelector('#chat-container #show-hide-button button');
+		btn = doc.querySelector('#chat-container #show-hide-button button');
 		if (btn) {
 			btn.removeEventListener('click', unhide);
 			btn.addEventListener('click', unhide);
 		}
+	}
 
-		// detect url change
-		if (url != window.location.href) {
-			url = window.location.href;
-			debug('url changed:', url);
-			hide = true;
-		} else if (!hide) return;
+	function init() {
+		if (watcher) clearInterval(watcher);
+		debug('initializing...');
+		hide = true;
+		url = window.location.href;
+		setTimeout(() => {
+			watcher = setInterval(update, interval);
+			debug('initialized.');
+			update();
+		}, wait);
+	}
 
-		// find & click the close button
-		btn = find();
-		if (btn) {
-			debug('click:', btn);
-			btn.dispatchEvent(new Event('click'));
-		}
-	};
-
-	doc.addEventListener('DOMContentLoaded', () => {
-		setInterval(update, interval);
-	});
+	doc.addEventListener('DOMContentLoaded', init);
 
 })(document);
 
