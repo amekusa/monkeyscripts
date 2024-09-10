@@ -22,11 +22,12 @@
 
 	let find = () => {
 		try {
-			let frame = doc.querySelector('iframe#chatframe');
-			if (!frame) return null;
-			frame = frame.contentWindow.document;
-			if (!frame.querySelector('yt-live-chat-item-list-renderer #items')) return null; // wait actual messages show up before close
-			return frame.querySelector('yt-live-chat-header-renderer #close-button button');
+			let el = doc.querySelector('iframe#chatframe');
+			if (!el) return null;
+			el = el.contentWindow.document;
+			// ensure the actual chat messages have beeen showed up
+			if (!el.querySelector('yt-live-chat-item-list-renderer #items [id], yt-live-chat-item-list-renderer #empty-state-message')) return null;
+			return el.querySelector('yt-live-chat-header-renderer #close-button button');
 		} catch (e) {
 			return null;
 		}
