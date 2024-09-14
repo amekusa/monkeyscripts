@@ -13,10 +13,10 @@
 
 (function (doc) {
 	// --- config ---
-	let wait = 4000; // initial wait time (ms)
+	let wait     = 4000; // initial wait time (ms)
 	let interval = 2000; // update interval (ms)
-	let match = /^https:\/\/www\.youtube\.com\/(?:watch\?|clip\/)/; // url pattern
-	let debug = false ? console.debug : (() => {});
+	let match    = /^https:\/\/www\.youtube\.com\/(?:watch\?|clip\/)/; // url pattern
+	let debug    = true ? console.debug : (() => {});
 	// --------------
 
 	let watcher;
@@ -25,11 +25,11 @@
 
 	function findCloseButton() {
 		try {
-			let el = doc.querySelector('iframe#chatframe');
-			if (!el) return null;
-			el = el.contentWindow.document;
-			if (!el.querySelector('yt-live-chat-item-list-renderer #items [id], yt-live-chat-item-list-renderer #empty-state-message')) return null;
-			return el.querySelector('yt-live-chat-header-renderer #close-button button');
+			let fr = doc.querySelector('iframe#chatframe'); // frame
+			if (!fr) return null;
+			fr = fr.contentWindow.document;
+			if (!fr.querySelector('yt-live-chat-item-list-renderer #items [id], yt-live-chat-item-list-renderer #empty-state-message')) return null;
+			return fr.querySelector('yt-live-chat-header-renderer #close-button button');
 		} catch (e) {
 			return null;
 		}
