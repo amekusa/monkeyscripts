@@ -20,8 +20,8 @@
 	// --------------
 
 	let watcher;
+	let paused;
 	let hide;
-	let url;
 
 	function findCloseButton() {
 		try {
@@ -42,14 +42,7 @@
 
 	function update() {
 		if (!window.location.href.match(match)) return; // do nothing
-
-		// detect url change
-		if (url != window.location.href) {
-			debug('url changed:', window.location.href);
-			return init();
-		}
-
-		if (!hide) return;
+		if (paused || !hide) return; // do nothing
 
 		// find & click the close button
 		let btn = findCloseButton();
@@ -66,19 +59,33 @@
 		}
 	}
 
+	function pause() {
+		debug('pause.');
+		paused = true;
+		if (watcher) {
+			clearTimeout(watcher);
+			clearInterval(watcher);
+			watcher = null;
+		}
+	}
+
 	function init() {
-		if (watcher) clearInterval(watcher);
+		if (watcher) return; // already running
+		if (paused) {
+			debug('resume.');
+			paused = false;
+		}
 		debug('initializing...');
 		hide = true;
-		url = window.location.href;
-		setTimeout(() => {
+		watcher = setTimeout(() => {
 			watcher = setInterval(update, interval);
 			debug('initialized.');
 			update();
 		}, wait);
 	}
 
-	doc.addEventListener('DOMContentLoaded', init);
+	doc.addEventListener('yt-navigate-start', pause);
+	doc.addEventListener('yt-navigate-finish', init);
 
 })(document);
 
