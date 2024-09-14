@@ -16,7 +16,7 @@
 	let wait     = 4000; // initial wait time (ms)
 	let interval = 2000; // update interval (ms)
 	let match    = /^https:\/\/www\.youtube\.com\/(?:watch\?|clip\/)/; // url pattern
-	let debug    = true ? console.debug : (() => {});
+	let debug    = false ? console.debug : (() => {});
 	// --------------
 
 	let watcher;
@@ -59,7 +59,8 @@
 	}
 
 	function pause() {
-		if (!paused) debug('pause.');
+		if (paused) return;
+		debug('pause.');
 		paused = true;
 		if (watcher) {
 			clearTimeout(watcher);
