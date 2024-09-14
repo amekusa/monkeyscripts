@@ -41,7 +41,6 @@
 	}
 
 	function update() {
-		if (!window.location.href.match(match)) return; // do nothing
 		if (paused || !hide) return; // do nothing
 
 		// find & click the close button
@@ -60,7 +59,7 @@
 	}
 
 	function pause() {
-		debug('pause.');
+		if (!paused) debug('pause.');
 		paused = true;
 		if (watcher) {
 			clearTimeout(watcher);
@@ -71,6 +70,10 @@
 
 	function init() {
 		if (watcher) return; // already running
+		if (!location.href.match(match)) {
+			debug('url mismatch:', location.href);
+			return;
+		}
 		if (paused) {
 			debug('resume.');
 			paused = false;
