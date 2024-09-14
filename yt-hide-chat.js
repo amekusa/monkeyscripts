@@ -87,8 +87,9 @@
 		}, wait);
 	}
 
-	doc.addEventListener('yt-navigate-start', pause);
+	doc.addEventListener('DOMContentLoaded', init);
 	doc.addEventListener('yt-navigate-finish', init);
+	doc.addEventListener('yt-navigate-start', pause);
 
 })(document);
 
