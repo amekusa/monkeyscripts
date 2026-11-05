@@ -14,7 +14,7 @@
 (function (doc) {
 
 	let config = {
-		// --- Conciguration ---
+		// --- Configuration ---
 		debug: false,
 		filter: [
 			// cringe contents
