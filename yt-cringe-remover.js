@@ -2,8 +2,8 @@
 // @name         YouTube - Hide cringe videos & channels
 // @namespace    amekusa.yt-cringe-remover
 // @author       amekusa
-// @version      0.1.1
-// @description  Remove cringe videos & channels on YouTube. Not fully implemented yet
+// @version      0.2.0
+// @description  Blur thumbnails of videos matching title patterns
 // @match        https://www.youtube.com/*
 // @run-at       document-start
 // @grant        none
@@ -12,23 +12,51 @@
 // ==/UserScript==
 
 (function (doc) {
-	let debug = false ? console.debug : (() => {});
+
+	let config = {
+		debug: true,
+		filter: [
+			// cringe contents
+			/(?:^|[^a-z])(?:vtube|holo|ch\.|nijis|genshin|2ch|5ch)/i,
+			/(?:ホロライブ|にじさん|原神)/u,
+			/(?:歌ってみた|歌い手|初音|ボカロ)/u,
+			/(?:コメ付|ゆっくり|ずんだ|(?:2|5|２|５)ちゃん)/u,
+
+			// spoilers
+			/(?:時のオカリナ|時オカ)/u,
+			/(?:ocarina|oot|zelda)/i,
+		],
+		debounce: 3000, // in milliseconds
+		styles: { // styles for filtered videos
+			card: [
+				'opacity: .25 !important;',
+			],
+			thumbnail: [
+				'opacity: .25 !important;',
+				'filter: blur(4px) !important;',
+			],
+		},
+		cardSelector: [
+			// css selector for video items
+			'yt-lockup-view-model',
+		],
+	}
+
+	let debug = config.debug ? console.debug : (() => {});
+	let cardSel = config.cardSelector.join(',');
+	let {filter, debounce} = config;
+
 	let NS = '--ns' + Math.floor(Math.random() * 10000); // namespace
-
-	let filter = [
-		/(?:^|[^a-z])(?:vtube|holo|ch\.|nijis|genshin|hongkai|2ch|5ch)/i,
-		/(?:ホロライ|にじさん|原神|スターレイル)/u,
-		/(?:歌ってみた|歌い手|初音|ボカロ)/u,
-		/(?:コメ付|ゆっくり|ずんだも|(?:2|5|２|５)ちゃんねる)/u,
-	];
-
 	let purged = `${NS}-purged`;
 
-	let purge = item => {
-		item.classList.add(purged);
-	};
+	let scheduled = false;
+	let lastUpdate = 0;
 
-	let check = item => {
+	function purge(item, flag = true) {
+		item.classList.toggle(purged, flag);
+	}
+
+	function check(item) {
 		let info = item.innerText;
 		for (let i = 0; i < filter.length; i++) {
 			if (info.match(filter[i])) {
@@ -37,34 +65,65 @@
 				return;
 			}
 		}
-	};
+		purge(item, false)
+	}
 
-	let checkAll = sel => {
-		doc.querySelectorAll(`${sel}:not(.${purged})`).forEach(check);
-	};
+	function update() {
+		lastUpdate = Date.now();
+		let cards = doc.querySelectorAll(cardSel);
+		for (let i = 0; i < cards.length; i++) {
+			check(cards[i]);
+		}
+	}
 
-	let update = () => {
-		checkAll('ytd-video-renderer');
-		checkAll('ytd-rich-item-renderer');
-		checkAll('ytd-reel-item-renderer'); // videos in a carousel list
-		checkAll('ytd-compact-video-renderer'); // videos on the right sidebar
-	};
+	function schedule() {
+		if (scheduled) return;
+		scheduled = true;
+		let delay = Math.max(0, lastUpdate + debounce - Date.now());
+		setTimeout(function () {
+			scheduled = false;
+			update();
+		}, delay);
+	}
 
-	doc.addEventListener('scrollend', update);
-	doc.addEventListener('DOMContentLoaded', () => {
+	function init() {
+		// css
 		let style = doc.createElement('style');
-		style.innerHTML = `
+		style.textContent = `
 			.${purged} {
-				opacity: .25 !important;
+				${config.styles.card.join('')}
 			}
-			.${purged} img {
-				opacity: .25 !important;
-				filter: blur(4px) !important;
+			.${purged} img,
+			.${purged} video,
+			.${purged} canvas {
+				${config.styles.thumbnail.join('')}
 			}
 		`;
-		doc.head.appendChild(style);
+		(doc.head || doc.documentElement).appendChild(style);
+
+		// initial scan
 		update();
-	});
+
+		// watch for dynamically loaded or updated content
+		let observer = new MutationObserver(schedule);
+		observer.observe(doc.documentElement, {
+			childList: true,
+			subtree: true,
+			characterData: true,
+			attributes: true,
+			attributeFilter: ['title', 'aria-label'],
+		});
+
+		// youtube SPA navigation
+		doc.addEventListener('yt-navigate-finish', schedule);
+
+		// fallback for lazy-loaded content
+		doc.addEventListener('scrollend', schedule);
+	}
+
+	if (doc.readyState == 'loading') {
+		doc.addEventListener('DOMContentLoaded', init, {once: true});
+	} else init();
 
 })(document);
 
