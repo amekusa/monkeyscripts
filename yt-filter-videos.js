@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         YouTube - Filter videos by title and channnel
+// @name         YouTube - Filter videos by title and channel name
 // @namespace    amekusa.yt-filter-videos
 // @author       amekusa
-// @version      0.2.0
+// @version      0.3.0
 // @description  Blur thumbnails of videos matching patterns
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -27,7 +27,7 @@
 			/(?:時のオカリナ|時オカ)/u,
 			/(?:ocarina|oot|zelda)/i,
 		],
-		debounce: 3000, // in milliseconds
+		debounce: 1500, // in milliseconds
 		styles: { // styles for filtered videos
 			card: [
 				'opacity: .25 !important;',
@@ -37,8 +37,7 @@
 				'filter: blur(4px) !important;',
 			],
 		},
-		cardSelector: [
-			// css selector for video items
+		cardSelector: [ // css selector for video items
 			'yt-lockup-view-model',
 		],
 		// === End of Configuration ===
