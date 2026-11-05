@@ -1,6 +1,6 @@
 // ==UserScript==
-// @name         YouTube - Hide cringe videos & channels
-// @namespace    amekusa.yt-cringe-remover
+// @name         YouTube - Hide Videos
+// @namespace    amekusa.yt-hide-videos
 // @author       amekusa
 // @version      0.2.0
 // @description  Blur thumbnails of videos matching title patterns
@@ -14,7 +14,8 @@
 (function (doc) {
 
 	let config = {
-		debug: true,
+		// --- Conciguration ---
+		debug: false,
 		filter: [
 			// cringe contents
 			/(?:^|[^a-z])(?:vtube|holo|ch\.|nijis|genshin|2ch|5ch)/i,
@@ -40,6 +41,7 @@
 			// css selector for video items
 			'yt-lockup-view-model',
 		],
+		// === End of Configuration ===
 	}
 
 	let debug = config.debug ? console.debug : (() => {});
