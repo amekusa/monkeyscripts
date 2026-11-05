@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name         YouTube - Hide Videos
-// @namespace    amekusa.yt-hide-videos
+// @name         YouTube - Filter videos by title and channnel
+// @namespace    amekusa.yt-filter-videos
 // @author       amekusa
 // @version      0.2.0
-// @description  Blur thumbnails of videos matching title patterns
+// @description  Blur thumbnails of videos matching patterns
 // @match        https://www.youtube.com/*
 // @run-at       document-start
 // @grant        none
