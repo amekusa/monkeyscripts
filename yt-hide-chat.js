@@ -145,8 +145,7 @@
 			console.error(label, e);
 			return;
 		}
-		killWatcher();
-		killDetector();
+		killAll();
 		state.set(DONE);
 	}
 
@@ -158,7 +157,7 @@
 		let frame = doc.querySelector('iframe#chatframe');
 		if (frame) {
 			debug(`Chat frame detected:`, frame);
-			killWatcher();
+			killAll();
 			state.set(READY);
 			watcher = new FrameWatcher(frame, update);
 
@@ -171,6 +170,7 @@
 		if (watcher) {
 			watcher.dispose();
 			watcher = null;
+			debug(`Killed watcher.`);
 		}
 	}
 
@@ -178,7 +178,13 @@
 		if (detector) {
 			detector.disconnect();
 			detector = null;
+			debug(`Killed detector.`);
 		}
+	}
+
+	function killAll() {
+		killWatcher();
+		killDetector();
 	}
 
 	/**
@@ -186,8 +192,7 @@
 	 */
 	function reset() {
 		debug(`Reset.`);
-		killWatcher();
-		killDetector();
+		killAll();
 		state.set(WAITING);
 		state.set(IDLE, wait, () => {
 			detector = new MutationObserver(detect);
@@ -201,6 +206,7 @@
 
 	function pause() {
 		debug(`Pause.`);
+		killAll();
 		state.set(PAUSED);
 	}
 
