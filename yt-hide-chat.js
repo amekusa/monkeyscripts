@@ -79,7 +79,10 @@
 			this._action = this.action.bind(this, this.frame);
 			this.observer;
 			this.aborter = new AbortController();
-			this.frame.addEventListener('load', this._observe.bind(this), {signal: this.aborter.signal});
+			this.frame.addEventListener('load', () => {
+				this._observe();
+				this.action(this.frame);
+			}, {signal: this.aborter.signal});
 			this._observe();
 		}
 		dispose() {
@@ -100,7 +103,6 @@
 			}
 			this.observer = new MutationObserver(this._action);
 			this.observer.observe(frameDoc.documentElement, this.observerOpts);
-			this.action(this.frame);
 		}
 		_unobserve() {
 			if (!this.observer) return;
@@ -160,6 +162,7 @@
 			killAll();
 			state.set(READY);
 			watcher = new FrameWatcher(frame, update);
+			update(frame);
 
 		} else { // no frame
 			killWatcher();
