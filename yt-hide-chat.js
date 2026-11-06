@@ -9,6 +9,8 @@
 // @grant        none
 // @license      MIT
 // @homepage     https://github.com/amekusa/monkeyscripts
+// @downloadURL  https://update.greasyfork.org/scripts/507558/YouTube%20-%20Hide%20chat%20by%20default.user.js
+// @updateURL    https://update.greasyfork.org/scripts/507558/YouTube%20-%20Hide%20chat%20by%20default.meta.js
 // ==/UserScript==
 
 (function (doc) {
