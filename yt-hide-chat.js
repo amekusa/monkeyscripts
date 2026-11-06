@@ -2,7 +2,7 @@
 // @name         YouTube - Hide chat by default
 // @namespace    amekusa.yt-hide-chat
 // @author       amekusa
-// @version      3.2.0
+// @version      3.3.0
 // @description  Hide chat on YouTube live videos by default.
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -145,6 +145,8 @@
 			console.error(label, e);
 			return;
 		}
+		killWatcher();
+		killDetector();
 		state.set(DONE);
 	}
 
@@ -156,15 +158,26 @@
 		let frame = doc.querySelector('iframe#chatframe');
 		if (frame) {
 			debug(`Chat frame detected:`, frame);
-			if (watcher) watcher.dispose();
+			killWatcher();
 			state.set(READY);
 			watcher = new FrameWatcher(frame, update);
 
 		} else { // no frame
-			if (watcher) {
-				watcher.dispose();
-				watcher = null;
-			}
+			killWatcher();
+		}
+	}
+
+	function killWatcher() {
+		if (watcher) {
+			watcher.dispose();
+			watcher = null;
+		}
+	}
+
+	function killDetector() {
+		if (detector) {
+			detector.disconnect();
+			detector = null;
 		}
 	}
 
@@ -173,12 +186,17 @@
 	 */
 	function reset() {
 		debug(`Reset.`);
-		if (watcher) {
-			watcher.dispose();
-			watcher = null;
-		}
+		killWatcher();
+		killDetector();
 		state.set(WAITING);
-		state.set(IDLE, wait, detect);
+		state.set(IDLE, wait, () => {
+			detector = new MutationObserver(detect);
+			detector.observe(doc.documentElement, {
+				childList: true,
+				subtree: true,
+			});
+			detect();
+		});
 	}
 
 	function pause() {
@@ -188,11 +206,6 @@
 
 	function init() {
 		reset();
-		detector = new MutationObserver(detect);
-		detector.observe(doc.documentElement, {
-			childList: true,
-			subtree: true,
-		});
 		doc.addEventListener('yt-navigate-start',  pause);
 		doc.addEventListener('yt-navigate-finish', reset);
 	}
