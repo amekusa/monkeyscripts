@@ -12,85 +12,165 @@
 // ==/UserScript==
 
 (function (doc) {
-	// --- config ---
-	let wait     = 4000; // initial wait time (ms)
-	let interval = 2000; // update interval (ms)
-	let match    = /^https:\/\/www\.youtube\.com\/(?:watch\?|clip\/)/; // url pattern
-	let debug    = false ? console.debug : (() => {});
-	// --------------
 
+	let config = {
+		// --- Configuration ---
+		debug: true,
+		wait:  5000, // in milliseconds
+		// === End of Configuration ===
+	}
+
+	class State {
+		constructor(initial, opts) {
+			this.curr = initial;
+			this.prev;
+			this.debug = opts.debug || false;
+			this.timer = null;
+		}
+		get() {
+			return this.curr;
+		}
+		set(value, timer = 0, cb = null) {
+			if (this.timer) clearTimeout(this.timer);
+			if (timer > 0) {
+				this.timer = setTimeout(() => {
+					this.timer = null;
+					this._set(value);
+					if (cb) cb(this);
+				}, timer);
+			} else {
+				this.timer = null;
+				this._set(value);
+				if (cb) cb(this);
+			}
+		}
+		_set(value) {
+			this.prev = this.curr;
+			this.curr = value;
+			if (this.debug) console.debug(`State changed from`, this.prev, `to`, this.curr);
+		}
+		is(value) {
+			return this.curr === value;
+		}
+	}
+
+	class FrameWatcher {
+		constructor(frame, action, observerOpts) {
+			this.frame = frame;
+			this.action = action;
+			this.observerOpts = observerOpts || {
+				childList: true,
+				subtree: true,
+				characterData: true,
+			};
+			this._action = this.action.bind(this, this.frame);
+			this.observer;
+			this.aborter = new AbortController();
+			this.frame.addEventListener('load', this._observe.bind(this), {signal: this.aborter.signal});
+			this._observe();
+		}
+		dispose() {
+			this._unobserve();
+			this.aborter.abort();
+			this.aborter = null;
+			this.frame = null;
+			this.action = null;
+		}
+		_observe() {
+			this._unobserve();
+			let frameDoc;
+			try {
+				frameDoc = this.frame.contentDocument;
+				if (!frameDoc || !frameDoc.documentElement) return;
+			} catch (e) {
+				return;
+			}
+			this.observer = new MutationObserver(this._action);
+			this.observer.observe(frameDoc.documentElement, this.observerOpts);
+			this.action(this.frame);
+		}
+		_unobserve() {
+			if (!this.observer) return;
+			this.observer.disconnect();
+			this.observer = null;
+		}
+	}
+
+	let debug = config.debug ? console.debug : (() => {});
+	let {wait} = config;
+
+	let state = new State(undefined, {debug: config.debug});
+	const IDLE    = 0;
+	const READY   = 1;
+	const DONE    = 2;
+	const PAUSED  = 4;
+	const WAITING = 8;
+
+	let detector;
 	let watcher;
-	let paused;
-	let hide;
 
-	function findCloseButton() {
+	function update(frame) {
+		if (!state.is(READY)) return;
 		try {
-			let fr = doc.querySelector('iframe#chatframe'); // frame
-			if (!fr) return null;
-			fr = fr.contentWindow.document;
-			if (!fr.querySelector('yt-live-chat-item-list-renderer #items [id], yt-live-chat-item-list-renderer #empty-state-message')) return null;
-			return fr.querySelector('yt-live-chat-header-renderer #close-button button');
-		} catch (e) {
-			return null;
-		}
-	}
-
-	function unhide() {
-		debug('unhide.');
-		hide = false;
-	}
-
-	function update() {
-		if (paused || !hide) return; // do nothing
-
-		// find & click the close button
-		let btn = findCloseButton();
-		if (btn) {
+			// find & click the close button
+			frame = frame.contentWindow.document;
+			if (!frame.querySelector('yt-live-chat-item-list-renderer #items [id], yt-live-chat-item-list-renderer #empty-state-message')) return null;
+			let btn = frame.querySelector('yt-live-chat-header-renderer #close-button button');
+			if (!btn) return;
 			debug('click:', btn);
-			return btn.dispatchEvent(new Event('click'));
-		}
+			// btn.dispatchEvent(new Event('click'));
+			btn.click();
 
-		// hook "Show chat" button
-		btn = doc.querySelector('#chat-container #show-hide-button button');
-		if (btn) {
-			btn.removeEventListener('click', unhide);
-			btn.addEventListener('click', unhide);
+		} catch (e) {
+			console.error(`[yt-hide-chat]`, e);
+			return;
 		}
+		state.set(DONE);
+	}
+
+	function detect() {
+		if (!state.is(IDLE)) return;
+		let frame = doc.querySelector('iframe#chatframe');
+		if (frame) {
+			if (watcher) watcher.dispose();
+			state.set(READY);
+			watcher = new FrameWatcher(frame, update);
+
+		} else { // no frame
+			if (watcher) {
+				watcher.dispose();
+				watcher = null;
+			}
+		}
+	}
+
+	function reset() {
+		if (watcher) {
+			watcher.dispose();
+			watcher = null;
+		}
+		state.set(WAITING);
+		state.set(IDLE, wait, detect);
 	}
 
 	function pause() {
-		if (paused) return;
-		debug('pause.');
-		paused = true;
-		if (watcher) {
-			clearTimeout(watcher);
-			clearInterval(watcher);
-			watcher = null;
-		}
+		state.set(PAUSED);
 	}
 
 	function init() {
-		if (watcher) return; // already running
-		if (!location.href.match(match)) {
-			debug('url mismatch:', location.href);
-			return;
-		}
-		if (paused) {
-			debug('resume.');
-			paused = false;
-		}
-		debug('initializing...');
-		hide = true;
-		watcher = setTimeout(() => {
-			watcher = setInterval(update, interval);
-			debug('initialized.');
-			update();
-		}, wait);
+		reset();
+		detector = new MutationObserver(detect);
+		detector.observe(doc.documentElement, {
+			childList: true,
+			subtree: true,
+		});
+		doc.addEventListener('yt-navigate-start',  pause);
+		doc.addEventListener('yt-navigate-finish', reset);
 	}
 
-	doc.addEventListener('DOMContentLoaded', init);
-	doc.addEventListener('yt-navigate-finish', init);
-	doc.addEventListener('yt-navigate-start', pause);
+	if (doc.readyState == 'loading') {
+		doc.addEventListener('DOMContentLoaded', init, {once: true});
+	} else init();
 
 })(document);
 
