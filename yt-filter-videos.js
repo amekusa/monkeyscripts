@@ -9,6 +9,8 @@
 // @grant        none
 // @license      MIT
 // @homepage     https://github.com/amekusa/monkeyscripts
+// @downloadURL  https://update.greasyfork.org/scripts/603896/YouTube%20-%20Filter%20videos%20by%20title%20and%20channel%20name.user.js
+// @updateURL    https://update.greasyfork.org/scripts/603896/YouTube%20-%20Filter%20videos%20by%20title%20and%20channel%20name.meta.js
 // ==/UserScript==
 
 (function (doc) {
