@@ -15,7 +15,7 @@
 
 	let config = {
 		// --- Configuration ---
-		debug: true,
+		debug: false,
 		wait:  5000, // in milliseconds
 		// === End of Configuration ===
 	}
