@@ -54,6 +54,9 @@
 		}
 	}
 
+	/**
+	 * Observes mutations inside a frame.
+	 */
 	class FrameWatcher {
 		constructor(frame, action, observerOpts) {
 			this.frame = frame;
@@ -100,19 +103,21 @@
 	let {wait} = config;
 
 	let state = new State(undefined, {debug: config.debug});
-	const IDLE    = 0;
-	const READY   = 1;
-	const DONE    = 2;
-	const PAUSED  = 4;
-	const WAITING = 8;
+	const IDLE    = 0; // looking for chat iframe
+	const READY   = 1; // chat iframe found
+	const DONE    = 2; // closed chat successfully
+	const PAUSED  = 4; // transitioning to other page
+	const WAITING = 8; // waiting after transition
 
-	let detector;
-	let watcher;
+	let detector; // chat iframe detector
+	let watcher;  // mutation observer inside chat iframe
 
+	/**
+	 * Finds the close button, then clicks on it.
+	 */
 	function update(frame) {
 		if (!state.is(READY)) return;
 		try {
-			// find & click the close button
 			frame = frame.contentWindow.document;
 			if (!frame.querySelector('yt-live-chat-item-list-renderer #items [id], yt-live-chat-item-list-renderer #empty-state-message')) return null;
 			let btn = frame.querySelector('yt-live-chat-header-renderer #close-button button');
@@ -128,6 +133,9 @@
 		state.set(DONE);
 	}
 
+	/**
+	 * Detects the chat iframe.
+	 */
 	function detect() {
 		if (!state.is(IDLE)) return;
 		let frame = doc.querySelector('iframe#chatframe');
@@ -144,6 +152,9 @@
 		}
 	}
 
+	/**
+	 * Resets the state to idle.
+	 */
 	function reset() {
 		if (watcher) {
 			watcher.dispose();
