@@ -20,6 +20,10 @@
 		// === End of Configuration ===
 	}
 
+	/**
+	 * Simple state manager with transition timer.
+	 * @author amekusa
+	 */
 	class State {
 		constructor(initial, opts) {
 			this.curr = initial;
@@ -56,6 +60,7 @@
 
 	/**
 	 * Observes mutations inside a frame.
+	 * @author amekusa
 	 */
 	class FrameWatcher {
 		constructor(frame, action, observerOpts) {
