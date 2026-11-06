@@ -2,7 +2,7 @@
 // @name         YouTube - Hide chat by default
 // @namespace    amekusa.yt-hide-chat
 // @author       amekusa
-// @version      3.1.0
+// @version      3.2.0
 // @description  Hide chat on YouTube live videos by default.
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -28,8 +28,10 @@
 		constructor(initial, opts) {
 			this.curr = initial;
 			this.prev;
-			this.debug = opts.debug || false;
 			this.timer = null;
+			this.debug = false;
+			let {debug} = opts;
+			if (debug) this.debug = (typeof debug == 'function') ? debug : console.debug;
 		}
 		get() {
 			return this.curr;
@@ -42,6 +44,7 @@
 					this._set(value);
 					if (cb) cb(this);
 				}, timer);
+				if (this.debug) this.debug(`State will change from`, this.curr, `to`, value, `in`, timer, `ms...`);
 			} else {
 				this.timer = null;
 				this._set(value);
@@ -51,7 +54,7 @@
 		_set(value) {
 			this.prev = this.curr;
 			this.curr = value;
-			if (this.debug) console.debug(`State changed from`, this.prev, `to`, this.curr);
+			if (this.debug) this.debug(`State changed from`, this.prev, `to`, this.curr);
 		}
 		is(value) {
 			return this.curr === value;
@@ -104,10 +107,15 @@
 		}
 	}
 
-	let debug = config.debug ? console.debug : (() => {});
+	let label = '[yt-hide-chat]'; // label for logging
+
+	let debug = config.debug // debug logger
+		? ((...args) => console.debug(label, ...args))
+		: (() => {});
+
 	let {wait} = config;
 
-	let state = new State(undefined, {debug: config.debug});
+	let state = new State(undefined, {debug});
 	const IDLE    = 0; // looking for chat iframe
 	const READY   = 1; // chat iframe found
 	const DONE    = 2; // closed chat successfully
@@ -127,12 +135,12 @@
 			if (!frame.querySelector('yt-live-chat-item-list-renderer #items [id], yt-live-chat-item-list-renderer #empty-state-message')) return null;
 			let btn = frame.querySelector('yt-live-chat-header-renderer #close-button button');
 			if (!btn) return;
-			debug('click:', btn);
 			// btn.dispatchEvent(new Event('click'));
 			btn.click();
+			debug(`Clicked button:`, btn);
 
 		} catch (e) {
-			console.error(`[yt-hide-chat]`, e);
+			console.error(label, e);
 			return;
 		}
 		state.set(DONE);
@@ -145,6 +153,7 @@
 		if (!state.is(IDLE)) return;
 		let frame = doc.querySelector('iframe#chatframe');
 		if (frame) {
+			debug(`Chat frame detected:`, frame);
 			if (watcher) watcher.dispose();
 			state.set(READY);
 			watcher = new FrameWatcher(frame, update);
@@ -161,6 +170,7 @@
 	 * Resets the state to idle.
 	 */
 	function reset() {
+		debug(`Reset.`);
 		if (watcher) {
 			watcher.dispose();
 			watcher = null;
@@ -170,6 +180,7 @@
 	}
 
 	function pause() {
+		debug(`Pause.`);
 		state.set(PAUSED);
 	}
 
