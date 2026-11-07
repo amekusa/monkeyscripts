@@ -27,7 +27,8 @@
 
 			// spoilers
 			/(時のオカリナ|時オカ)/u,
-			/(ocarina|zelda)/i,
+			/(ocarina)/i,
+			/OOT/,
 		],
 		debounce: 1500, // in milliseconds
 		styles: { // styles for filtered videos
