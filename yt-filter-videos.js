@@ -20,14 +20,14 @@
 		debug: false,
 		filter: [
 			// cringe contents
-			/(?:^|[^a-z])(?:vtube|holo|ch\.|nijis|genshin|2ch|5ch)/i,
-			/(?:ホロライブ|にじさん|原神)/u,
-			/(?:歌ってみた|歌い手|初音|ボカロ)/u,
-			/(?:コメ付|ゆっくり|ずんだ|(?:2|5|２|５)ちゃん)/u,
+			/(^|[^a-z])(vtube|holo|ch\.|nijis|genshin|2ch|5ch)/i,
+			/(ホロライブ|にじさん|原神)/u,
+			/(歌ってみた|歌い手|初音|ボカロ)/u,
+			/(コメ付|ゆっくり|ずんだ|(2|5|２|５)ちゃん)/u,
 
 			// spoilers
-			/(?:時のオカリナ|時オカ)/u,
-			/(?:ocarina|oot|zelda)/i,
+			/(時のオカリナ|時オカ)/u,
+			/(ocarina|zelda)/i,
 		],
 		debounce: 1500, // in milliseconds
 		styles: { // styles for filtered videos
