@@ -35,8 +35,7 @@
 				'opacity: .25 !important;',
 			],
 			thumbnail: [
-				'opacity: .25 !important;',
-				'filter: blur(4px) !important;',
+				'filter: blur(6px) !important;',
 			],
 		},
 		cardSelector: [ // css selector for video items
