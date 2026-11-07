@@ -44,7 +44,7 @@
 
 			// shorts
 			'ytm-shorts-lockup-view-model',
-			'.reel-video-in-sequence-new',
+			'.reel-video-in-sequence-new.ytd-shorts',
 
 			// search results
 			'ytd-video-renderer',
