@@ -54,8 +54,13 @@
 			'ytd-playlist-panel-video-renderer',
 
 			// player recommendations
-			'.ytp-videowall-still',
+			//// "up next" video
+			'.ytp-autonav-endscreen-upnext-container',
+			//// recommendations near end
 			'.ytp-ce-element.ytp-ce-video',
+			//// recommendations after finished
+			'.ytp-videowall-still',
+			'.ytp-modern-videowall-still',
 		],
 		// === End of Configuration ===
 	}
@@ -112,10 +117,10 @@
 			.${purged} {
 				${styles.card.join(' ')}
 			}
-			.${purged} .reel-video-in-sequence-thumbnail,
+			.${purged} .reel-video-in-sequence-thumbnail, /* short thumbnail */
+			.${purged} .ytp-ce-covering-image,
 			.${purged} .ytp-videowall-still-image,
 			.${purged} .ytp-modern-videowall-still-image,
-			.${purged} .ytp-ce-covering-image,
 			.${purged} *[style*="background-image:"],
 			.${purged} img,
 			.${purged} video,
