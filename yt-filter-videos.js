@@ -39,7 +39,22 @@
 			],
 		},
 		cardSelector: [ // css selector for video items
+			// regular video cards
 			'yt-lockup-view-model',
+
+			// shorts
+			'ytm-shorts-lockup-view-model',
+			'.reel-video-in-sequence-new',
+
+			// search results
+			'ytd-video-renderer',
+
+			// playlist items
+			'ytd-playlist-panel-video-renderer',
+
+			// player recommendations
+			'.ytp-videowall-still',
+			'.ytp-ce-element.ytp-ce-video',
 		],
 		// === End of Configuration ===
 	}
