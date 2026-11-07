@@ -105,24 +105,21 @@
 
 	function init() {
 		// css
-		let cardStyle      = config.styles.card.join('');
-		let thumbnailStyle = config.styles.thumbnail.join('');
+		let styles = config.styles;
 		let style = doc.createElement('style');
 		style.textContent = `
 			.${purged} {
-				${cardStyle}
-			}
-			.${purged} img,
-			.${purged} video,
-			.${purged} canvas {
-				${thumbnailStyle}
+				${styles.card.join(' ')}
 			}
 			.${purged} .reel-video-in-sequence-thumbnail,
 			.${purged} .ytp-videowall-still-image,
 			.${purged} .ytp-modern-videowall-still-image,
 			.${purged} .ytp-ce-covering-image,
-			.${purged} *[style*="background-image:"] {
-				${thumbnailStyle}
+			.${purged} *[style*="background-image:"],
+			.${purged} img,
+			.${purged} video,
+			.${purged} canvas {
+				${styles.thumbnail.join(' ')}
 			}
 		`;
 		(doc.head || doc.documentElement).appendChild(style);
