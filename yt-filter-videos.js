@@ -2,7 +2,7 @@
 // @name         YouTube - Filter videos by title and channel name
 // @namespace    amekusa.yt-filter-videos
 // @author       amekusa
-// @version      0.4.0
+// @version      0.5.0
 // @description  Blur thumbnails of videos matching patterns
 // @match        https://www.youtube.com/*
 // @run-at       document-start
