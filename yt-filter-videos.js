@@ -140,10 +140,10 @@
 			attributeFilter: ['aria-hidden'],
 		});
 
-		// youtube SPA navigation
+		// on page load
 		doc.addEventListener('yt-navigate-finish', schedule);
 
-		// fallback for lazy-loaded content
+		// on scroll
 		doc.addEventListener('scrollend', schedule);
 	}
 
