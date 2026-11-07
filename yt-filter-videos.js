@@ -137,7 +137,7 @@
 			subtree: true,
 			characterData: true,
 			attributes: true,
-			attributeFilter: ['title', 'aria-label'],
+			attributeFilter: ['aria-hidden'],
 		});
 
 		// youtube SPA navigation
